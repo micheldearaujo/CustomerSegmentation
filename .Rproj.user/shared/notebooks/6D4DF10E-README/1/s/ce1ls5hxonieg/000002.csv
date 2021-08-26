@@ -1,0 +1,42 @@
+"0","# RColorBrewer provides us with many beautiful colors"
+"0","library(RColorBrewer)"
+"0","# dplyr package will help us when it comes to data manipulation"
+"0","library(dplyr)"
+"2","
+Attaching package: ‘dplyr’
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+"
+"0","# purrr is a functional programming toolkit that provides new ways of dealing with loops, just like the map() function."
+"0","library(purrr)"
+"0","# the cluster package provides many functions to work with clustering analysis."
+"0","library(cluster)"
+"0","# Enchance our plots"
+"0","library(grid)"
+"0","library(gridExtra)"
+"2","
+Attaching package: ‘gridExtra’
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    combine
+
+"
+"0","# the NbClust package provides indices for determining the best number of clusters"
+"0","library(NbClust)"
+"0","# The factoextra package is a must-have when it comes to extract and visualize multivariate data analysis, such as Principal Component Analysis (PCA) and more."
+"0","library(factoextra)"
+"2","Loading required package: ggplot2
+"
+"2","Welcome! Want to learn more? See two factoextra-related books at https://goo.gl/ve3WBa
+"
