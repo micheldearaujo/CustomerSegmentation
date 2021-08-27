@@ -40,7 +40,7 @@ the K-Means and the k-NN (k-Nearest Neighbors).
 
 **K-Means clustering** is a vector quantization that aims to partition *n* observations into *k* clusters in which each observation belongs to the cluster with the smallest mean distance within the cluster.
 
-The **k-nearest neighbors algorithm (k-NN) classifier** is a non-parametric classification. The input consists of the *k closest* training examples in the data set. The output of the k-NN classifier is a class of membership, just like the k-means. An object is classified by a plurality votes of its neighbors, with the object being assigned to the class most common among its *k nearest neighbors*. That is, a new point of data will be classified as the same class of the majority of the k nearest points in the data set.
+<!--The **k-nearest neighbors algorithm (k-NN) classifier** is a non-parametric classification. The input consists of the *k closest* training examples in the data set. The output of the k-NN classifier is a class of membership, just like the k-means. An object is classified by a plurality votes of its neighbors, with the object being assigned to the class most common among its *k nearest neighbors*. That is, a new point of data will be classified as the same class of the majority of the k nearest points in the data set. -->
 
 Let us start our project!
 
@@ -65,6 +65,8 @@ library(gridExtra)
 library(NbClust)
 # The factoextra package is a must-have when it comes to extract and visualize multivariate data analysis, such as Principal Component Analysis (PCA) and more.
 library(factoextra)
+# The "class" package provides k-Nearest Neighbors functions
+library(class)
 ```
 
 ## The data
@@ -247,7 +249,7 @@ plot(k.values,
 k <- 4
 ```
 
-In the Elbow method, the best number of cluster is determined by the "elbow position" in the graphic, in this case, 4 clusters would the best.
+In the Elbow method, the best number of cluster is determined by the "elbow position" in the graphic, in this case, 4 or 5 clusters would the best.
 
 #### Average Silhouette Method
 The Silhouette method calculates the average silhouette width. The higher this number is, the better is the algorithm performance.
@@ -318,7 +320,7 @@ k10 <- kmeans(customer[, 3:5],
 s10 <- plot(silhouette(k10$cluster, dist(customer[, 3:5], 'euclidean')))
 ```
 
-Now we make a visualization of the results using the fviz_nbclust() function. This function helps us visualize the optimal number of clusters as follows
+Now we make a visualization of the results using the fviz_nbclust() function. This function helps visualize the optimal number of clusters as follows
 
 ```{r}
 # Execute the function to get the plot of model performance
@@ -339,24 +341,27 @@ stat_gap <- clusGap(customer[, 3:5],
                     nstart=25,
                     K.max=10, B=50)
 fviz_gap_stat(stat_gap)
+```
 
-# It is seems reasonable to choose K=6, as it has been suggested by 2 methods.
+The Gap Statistic method shows two points have that a huge gap among the others, the k=5 and k=6. It is seems reasonable to choose K=6, as it has been suggested by 2 methods.
+
+```{r}
 print(k6)
 ```
 
-Printing the model k6 we can see a bunch of information about the model:
+Printing the k6 model we can see a plenty of information about the model:
 
 1. Cluster: A vector that denotes in each cluster each row of the data frame is.
 2. Centers: A matrix that holds the centroids of each cluster (for each feature[column])
 3. totss: Total Sum of Squares
-4. withinss: This is a vector representing the intra-cluster sum of squares having one componenet per cluster
+4. withinss: This is a vector representing the intra-cluster sum of squares having one component per cluster
 5. tot.withinss: This denotes the total intra-cluster sum of squares
 6. betweens: This is the sum of between-cluster squares
 7. size: The total number of points that each cluster holds.
 
 #### Visualizing the Clustering Results using the First Two Principal Components
 
-In order to make a 2D visualization, we have to select 2 of the 3 features that our model was built upon. For this, we run a Principal Component Analysis to select the 2 most important features.
+In order to make a 2D visualization, one have to select 2 of the 3 features that our model was built upon. For this, running a Principal Component Analysis to select the 2 most important features must solve the case.
 
 ```{r}
 pcclust=prcomp(customer[,3:5],scale=FALSE) #principal component analysis
@@ -365,10 +370,9 @@ pcclust$rotation[,1:2]
 
 ```
 
-We see that the top 2 most important principal components are the Annual Income and the Spending Score. This means that this two features are the ones that most separates the customers.
+Note that the top 2 most important principal components are the Annual Income and the Spending Score. This means that this two features are the ones that most separates the customers.
 
-
-**Lets visualize the clustering**
+### Visualizing the clustering
 
 ```{r}
 set.seed(1)
@@ -387,9 +391,9 @@ ggplot(customer,
 
 But we can explore the clustering result with the third component, the age, as well.
 
-1, Income and Age
+**1. Income and Age**
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 ggplot(customer,
        aes(x=Annual.Income..k..,
            y=Age)) +
@@ -403,9 +407,10 @@ ggplot(customer,
 ```
 
 As we can see, the age is not a good parameter for segmenting the customers of this dataset!
-2. Spending score and Age
 
-```{r}
+**2. Spending score and Age**
+
+```{r message=FALSE, warning=FALSE}
 ggplot(customer,
        aes(x=Spending.Score..1.100.,
            y=Age)) +
@@ -418,9 +423,9 @@ ggplot(customer,
           subtitle='Using K-means Clustering')
 ```
 
-So, the annual income and spending score are the best features to segment our customers.
+Spending Score and Age are not a good pair to clustering this dataset. So, the annual income and spending score are the best features to segment our customers.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 ggplot(customer,
        aes(x=Annual.Income..k..,
            y=Spending.Score..1.100.)) +
@@ -433,9 +438,9 @@ ggplot(customer,
           subtitle='Using K-means Clustering') 
 ```
 
-Besides k=6 has been the best number of clusters suggested by the Gap Statistic and the Average Silhouette Method, it seems That the clusters 1 and 2 are really close to each other, i.e, there should be 5 clusters instead of 6. Lets try making it with 5:
+Besides k=6 has been the best number of clusters suggested by the Gap Statistic and the Average Silhouette Method, it seems That the clusters 1 and 2 are really close to each other, i.e, there should be 5 clusters instead of 6. Let's try making it with 5:
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 ggplot(customer,
        aes(x=Annual.Income..k..,
            y=Spending.Score..1.100.)) +
@@ -458,8 +463,32 @@ paste("k5 betweenss is: ",k5$betweenss)
 paste("k6 betweenss is: ",k6$betweenss)
 ```
 
-For k6 we have a smaller number for the total sum of ISS than the k5 model. However, k5 presents a smaller number of between iss than the k6. This should be considered when taking this model into production.
+For k6 we have a smaller number for the total sum of ISS than the k5 model. However, k5 presents a smaller number of between ISS than the k6. This should be considered when taking this model into production.
 
 ## Conclusion
 
-coming soon...
+Customer Segmentation is the practice of dividing a company’s customers into groups that have similar characteristics between themselves.
+
+In this small project we saw how to perform a customer segmentation using R Programming Language and the K-Means clustering algorithm. It was possible to identify five groups in the Mall customers dataset:
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(customer,
+       aes(x=Annual.Income..k..,
+           y=Spending.Score..1.100.)) +
+  geom_point(stat='identity',
+             aes(color=as.factor(k5$cluster))) +
+  scale_color_discrete(name=" ",
+                       breaks=c('1', '2', '3', '4', '5'),
+                       labels=c('Cluster 1', 'Cluster 2', 'Cluster 3', 'Cluster 4', 'Cluster 5')) +
+  ggtitle("Segments of Mall Customers",
+          subtitle='Using K-means Clustering') 
+```
+
+
+1. A group with small annual income and small spending score. These are the customers have a low salary and spends according to their salary.
+2. A group with small annual income but have really high spending score. This group has the same annual income as the first group but use to buy much more.
+3. A group that has high annual income but has small spending score. These customers have a descent salary but are not shopaholic.
+4. The fourth group has high annual income and also has a high spending score.
+5. And the last group in an average of the former's. These customers have an average salary and also have an average spending score.
+
+With that in mind, the product owner can now develop specific products and marketing strategies aimed at each of these groups. For example, a high quality expensive product can be addressed only to the fourth group and a medium quality functional product could be addressed to the second and the fifth.

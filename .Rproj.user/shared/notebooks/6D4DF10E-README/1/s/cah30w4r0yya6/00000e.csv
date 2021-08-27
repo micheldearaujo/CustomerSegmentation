@@ -1,7 +1,0 @@
-"0","par(mar=c(4.1, 4.1, 4.1, 2.1))"
-"0","hist(customer$Age,"
-"0","     col='steelblue',"
-"0","     xlab='Age',"
-"0","     ylab='# of Customers',"
-"0","     main= ""Distribution of customers ages"","
-"0","     labels=TRUE)"
